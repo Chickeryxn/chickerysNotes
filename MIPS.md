@@ -20,6 +20,137 @@
 
 > **对齐（Alignment）**：访存指令要求地址对齐——按字访问的地址必须是 4 的倍数，按半字访问的地址必须是 2 的倍数，否则 MARS 会报「address not aligned」异常。
 
+### 指令助记符全称对照
+
+助记符（mnemonic）都是英文单词的缩写，看懂缩写规律后，大部分指令名称都能「望文生义」。
+
+### 命名规律
+
+| 组成部分 | 含义 | 例子 |
+| --- | --- | --- |
+| 后缀 `i` | **I**mmediate，立即数版本 | `addi` 即 `add` + i |
+| 后缀 `u` | **U**nsigned，无符号版本 | `addu`、`sltu`、`addiu` |
+| 后缀 `v` | **V**ariable，移位量放在寄存器中 | `sllv`、`srlv`、`srav` |
+| 前缀 `l` / `s` | **L**oad / **S**tore，读 / 写内存 | `lw`、`sw` |
+| 后缀 `b` / `h` / `w` | **B**yte / **H**alfword / **W**ord，字节 / 半字 / 字 | `lb`、`lh`、`lw` |
+| 末尾 `z` | **Z**ero，与 0 比较 | `blez`、`bgtz`、`beqz` |
+| 开头 `b` | **B**ranch，条件分支 | `beq`、`bne`、`bgtz` |
+| 开头 `j` | **J**ump，无条件跳转 | `j`、`jal`、`jr` |
+
+> 例：`sltiu` = **S**et on **L**ess **T**han **I**mmediate **U**nsigned，即「立即数版、按无符号比较的小于则置 1」。
+
+### 算术与逻辑（R 型）
+
+| 指令 | 全称 | 含义 |
+| --- | --- | --- |
+| `add` | **ADD** | 加法 |
+| `addu` | **ADD** **U**nsigned | 加法（不检查溢出） |
+| `sub` | **SUB**tract | 减法 |
+| `subu` | **SUB**tract **U**nsigned | 减法（不检查溢出） |
+| `and` | **AND** | 按位与 |
+| `or` | **OR** | 按位或 |
+| `xor` | e**X**clusive **OR** | 按位异或 |
+| `nor` | **N**ot **OR** | 按位或非 |
+| `slt` | **S**et on **L**ess **T**han | 小于则置 1（有符号） |
+| `sltu` | **S**et on **L**ess **T**han **U**nsigned | 小于则置 1（无符号） |
+| `mult` | **MULT**iply | 有符号乘法，结果入 `HI`/`LO` |
+| `multu` | **MULT**iply **U**nsigned | 无符号乘法 |
+| `div` | **DIV**ide | 有符号除法 |
+| `divu` | **DIV**ide **U**nsigned | 无符号除法 |
+| `mfhi` | **M**ove **F**rom **HI** | 从 `HI` 取出 |
+| `mflo` | **M**ove **F**rom **LO** | 从 `LO` 取出 |
+| `mthi` | **M**ove **T**o **HI** | 写入 `HI` |
+| `mtlo` | **M**ove **T**o **LO** | 写入 `LO` |
+
+### 移位（R 型）
+
+| 指令 | 全称 | 含义 |
+| --- | --- | --- |
+| `sll` | **S**hift **L**eft **L**ogical | 逻辑左移 |
+| `srl` | **S**hift **R**ight **L**ogical | 逻辑右移（高位补 0） |
+| `sra` | **S**hift **R**ight **A**rithmetic | 算术右移（高位补符号位） |
+| `sllv` | **S**hift **L**eft **L**ogical **V**ariable | 左移，移位量在寄存器中 |
+| `srlv` | **S**hift **R**ight **L**ogical **V**ariable | 逻辑右移，移位量在寄存器中 |
+| `srav` | **S**hift **R**ight **A**rithmetic **V**ariable | 算术右移，移位量在寄存器中 |
+
+### 立即数运算（I 型）
+
+| 指令 | 全称 | 含义 |
+| --- | --- | --- |
+| `addi` | **ADD** **I**mmediate | 加立即数（符号扩展） |
+| `addiu` | **ADD** **I**mmediate **U**nsigned | 加立即数（不检查溢出） |
+| `andi` | **AND** **I**mmediate | 与立即数（零扩展） |
+| `ori` | **OR** **I**mmediate | 或立即数（零扩展） |
+| `xori` | e**X**clusive **OR** **I**mmediate | 异或立即数（零扩展） |
+| `slti` | **S**et on **L**ess **T**han **I**mmediate | 小于立即数则置 1 |
+| `sltiu` | **S**et on **L**ess **T**han **I**mmediate **U**nsigned | 无符号比较版（立即数仍符号扩展） |
+| `lui` | **L**oad **U**pper **I**mmediate | 把立即数装到高 16 位 |
+
+### 访存（I 型）
+
+| 指令 | 全称 | 含义 |
+| --- | --- | --- |
+| `lw` | **L**oad **W**ord | 取字（4 字节） |
+| `lh` | **L**oad **H**alfword | 取半字（符号扩展） |
+| `lhu` | **L**oad **H**alfword **U**nsigned | 取半字（零扩展） |
+| `lb` | **L**oad **B**yte | 取字节（符号扩展） |
+| `lbu` | **L**oad **B**yte **U**nsigned | 取字节（零扩展） |
+| `lwl`、`lwr` | **L**oad **W**ord **L**eft / **R**ight | 未对齐取字（左半 / 右半） |
+| `sw` | **S**tore **W**ord | 存字 |
+| `sh` | **S**tore **H**alfword | 存半字 |
+| `sb` | **S**tore **B**yte | 存字节 |
+| `swl`、`swr` | **S**tore **W**ord **L**eft / **R**ight | 未对齐存字 |
+| `ll` | **L**oad **L**inked | 取字并建立链接（原子操作） |
+| `sc` | **S**tore **C**onditional | 条件存字（链接成功才写入） |
+
+### 分支与跳转
+
+| 指令 | 全称 | 含义 |
+| --- | --- | --- |
+| `beq` | **B**ranch if **EQ**ual | 相等则分支 |
+| `bne` | **B**ranch if **N**ot **E**qual | 不相等则分支 |
+| `blez` | **B**ranch if **L**ess than or **E**qual to **Z**ero | ≤0 则分支 |
+| `bgtz` | **B**ranch if **G**reater **T**han **Z**ero | >0 则分支 |
+| `bltz` | **B**ranch if **L**ess **T**han **Z**ero | <0 则分支 |
+| `bgez` | **B**ranch if **G**reater than or **E**qual to **Z**ero | ≥0 则分支 |
+| `bltzal` | **B**ranch if **L**ess **T**han **Z**ero **A**nd **L**ink | <0 则分支并保存返回地址 |
+| `bgezal` | **B**ranch if **G**reater than or **E**qual to **Z**ero **A**nd **L**ink | ≥0 则分支并保存返回地址 |
+| `j` | **J**ump | 无条件跳转 |
+| `jal` | **J**ump **A**nd **L**ink | 跳转并把返回地址存入 `$ra` |
+| `jr` | **J**ump **R**egister | 跳转到寄存器中的地址 |
+| `jalr` | **J**ump **A**nd **L**ink **R**egister | 寄存器跳转并保存返回地址 |
+
+### 系统与协处理器
+
+| 指令 | 全称 | 含义 |
+| --- | --- | --- |
+| `syscall` | **SYStem CALL** | 系统调用（调用号放在 `$v0`） |
+| `break` | **BREAK** | 断点（调试用） |
+| `nop` | **No** **Op**eration | 空操作 |
+| `eret` | **E**xception **RET**urn | 异常返回 |
+| `mfc0`、`mtc0` | **M**ove **F**rom / **T**o **C**oprocessor **0** | 读 / 写 CP0 寄存器 |
+| `mfc1`、`mtc1` | **M**ove **F**rom / **T**o **C**oprocessor **1** | 通用寄存器与浮点寄存器间搬数 |
+| `lwc1`、`swc1` | **L**oad / **S**tore **W**ord **C**oprocessor **1** | 浮点数访存 |
+| `cvt.s.w` | **C**on**V**er**T** **S**ingle from **W**ord | 整型转单精度浮点 |
+
+### 常见伪指令
+
+| 指令 | 全称 | 展开为 |
+| --- | --- | --- |
+| `li` | **L**oad **I**mmediate | `lui` + `ori`（或一条 `addi`/`ori`） |
+| `la` | **L**oad **A**ddress | `lui` + `ori` |
+| `move` | **MOVE** | `addu rd, rs, $zero` |
+| `not` | **NOT** | `nor rd, rs, $zero` |
+| `neg` | **NEG**ate | `sub rd, $zero, rs` |
+| `abs` | **ABS**olute value | 取绝对值（分支 + 减法） |
+| `mul` | **MUL**tiply | `mult` + `mflo` |
+| `rem` | **REM**ainder | `div` + `mfhi` |
+| `bgt`、`blt` | **B**ranch if **G**reater **T**han / **L**ess **T**han | `slt $at, …` + `bne` |
+| `bge`、`ble` | **B**ranch if **G**reater / **L**ess than or **E**qual | `slt $at, …` + `beq` |
+| `beqz`、`bnez` | **B**ranch if **EQ**ual / **N**ot **E**qual to **Z**ero | `beq`/`bne` + `$zero` |
+
+> 记忆口诀：**i 是立即数，u 是无符号，v 是移位量在寄存器，z 是与零比较；l/s 前缀是读/写内存，b/h/w 后缀是字节/半字/字。**
+
 ### 大端存储与小端存储
 
 **字节序（Endianness）** 描述多字节数据（如 16 位、32 位整数）在内存中按什么顺序存放：
@@ -181,6 +312,18 @@ lw  $t2, 0($s0)      # 再取字
 > HI：这个寄存器用于乘除法。它被用来存放每次乘法结果的高 32 位，也被用来存放除法结果的余数。
 >
 > LO：HI 的孪生兄弟。它被用来存放每次乘法结果的低 32 位，也被用来存放除法结果的商。
+
+`HI`/`LO` 是特殊寄存器，不能用普通指令直接读取或写入，需用 `mfhi`/`mflo` 把结果移出到通用寄存器：
+
+```asm
+mult $s0, $s1    # $s0 × $s1 → 64 位结果：HI 存高 32 位，LO 存低 32 位
+mflo $t0         # $t0 ← LO（乘积低 32 位）
+mfhi $t1         # $t1 ← HI（乘积高 32 位）
+
+div  $s2, $s3    # $s2 ÷ $s3
+mflo $t2         # $t2 ← LO（商）
+mfhi $t3         # $t3 ← HI（余数）
+```
 
 ### CP0 寄存器
 
@@ -819,137 +962,6 @@ rt = $t0 = 8 = 01000    immediate = 4 = 0000000000000100
 ```
 
 > 易错点：指令顺序存放，每条占 4 字节，故地址依次为 `0x3000`、`0x3004`、`0x3008`、`0x300c`；`bne` 的立即数字段存的是「以字为单位的相对偏移 1」，**不是** `next` 的地址。另外 `ori` 和 `sw` 里都出现了 4，但前者是立即数操作数、后者是地址偏移。
-
-## 指令助记符全称对照
-
-助记符（mnemonic）都是英文单词的缩写，看懂缩写规律后，大部分指令名称都能「望文生义」。
-
-### 命名规律
-
-| 组成部分 | 含义 | 例子 |
-| --- | --- | --- |
-| 后缀 `i` | **I**mmediate，立即数版本 | `addi` 即 `add` + i |
-| 后缀 `u` | **U**nsigned，无符号版本 | `addu`、`sltu`、`addiu` |
-| 后缀 `v` | **V**ariable，移位量放在寄存器中 | `sllv`、`srlv`、`srav` |
-| 前缀 `l` / `s` | **L**oad / **S**tore，读 / 写内存 | `lw`、`sw` |
-| 后缀 `b` / `h` / `w` | **B**yte / **H**alfword / **W**ord，字节 / 半字 / 字 | `lb`、`lh`、`lw` |
-| 末尾 `z` | **Z**ero，与 0 比较 | `blez`、`bgtz`、`beqz` |
-| 开头 `b` | **B**ranch，条件分支 | `beq`、`bne`、`bgtz` |
-| 开头 `j` | **J**ump，无条件跳转 | `j`、`jal`、`jr` |
-
-> 例：`sltiu` = **S**et on **L**ess **T**han **I**mmediate **U**nsigned，即「立即数版、按无符号比较的小于则置 1」。
-
-### 算术与逻辑（R 型）
-
-| 指令 | 全称 | 含义 |
-| --- | --- | --- |
-| `add` | **ADD** | 加法 |
-| `addu` | **ADD** **U**nsigned | 加法（不检查溢出） |
-| `sub` | **SUB**tract | 减法 |
-| `subu` | **SUB**tract **U**nsigned | 减法（不检查溢出） |
-| `and` | **AND** | 按位与 |
-| `or` | **OR** | 按位或 |
-| `xor` | e**X**clusive **OR** | 按位异或 |
-| `nor` | **N**ot **OR** | 按位或非 |
-| `slt` | **S**et on **L**ess **T**han | 小于则置 1（有符号） |
-| `sltu` | **S**et on **L**ess **T**han **U**nsigned | 小于则置 1（无符号） |
-| `mult` | **MULT**iply | 有符号乘法，结果入 `HI`/`LO` |
-| `multu` | **MULT**iply **U**nsigned | 无符号乘法 |
-| `div` | **DIV**ide | 有符号除法 |
-| `divu` | **DIV**ide **U**nsigned | 无符号除法 |
-| `mfhi` | **M**ove **F**rom **HI** | 从 `HI` 取出 |
-| `mflo` | **M**ove **F**rom **LO** | 从 `LO` 取出 |
-| `mthi` | **M**ove **T**o **HI** | 写入 `HI` |
-| `mtlo` | **M**ove **T**o **LO** | 写入 `LO` |
-
-### 移位（R 型）
-
-| 指令 | 全称 | 含义 |
-| --- | --- | --- |
-| `sll` | **S**hift **L**eft **L**ogical | 逻辑左移 |
-| `srl` | **S**hift **R**ight **L**ogical | 逻辑右移（高位补 0） |
-| `sra` | **S**hift **R**ight **A**rithmetic | 算术右移（高位补符号位） |
-| `sllv` | **S**hift **L**eft **L**ogical **V**ariable | 左移，移位量在寄存器中 |
-| `srlv` | **S**hift **R**ight **L**ogical **V**ariable | 逻辑右移，移位量在寄存器中 |
-| `srav` | **S**hift **R**ight **A**rithmetic **V**ariable | 算术右移，移位量在寄存器中 |
-
-### 立即数运算（I 型）
-
-| 指令 | 全称 | 含义 |
-| --- | --- | --- |
-| `addi` | **ADD** **I**mmediate | 加立即数（符号扩展） |
-| `addiu` | **ADD** **I**mmediate **U**nsigned | 加立即数（不检查溢出） |
-| `andi` | **AND** **I**mmediate | 与立即数（零扩展） |
-| `ori` | **OR** **I**mmediate | 或立即数（零扩展） |
-| `xori` | e**X**clusive **OR** **I**mmediate | 异或立即数（零扩展） |
-| `slti` | **S**et on **L**ess **T**han **I**mmediate | 小于立即数则置 1 |
-| `sltiu` | **S**et on **L**ess **T**han **I**mmediate **U**nsigned | 无符号比较版（立即数仍符号扩展） |
-| `lui` | **L**oad **U**pper **I**mmediate | 把立即数装到高 16 位 |
-
-### 访存（I 型）
-
-| 指令 | 全称 | 含义 |
-| --- | --- | --- |
-| `lw` | **L**oad **W**ord | 取字（4 字节） |
-| `lh` | **L**oad **H**alfword | 取半字（符号扩展） |
-| `lhu` | **L**oad **H**alfword **U**nsigned | 取半字（零扩展） |
-| `lb` | **L**oad **B**yte | 取字节（符号扩展） |
-| `lbu` | **L**oad **B**yte **U**nsigned | 取字节（零扩展） |
-| `lwl`、`lwr` | **L**oad **W**ord **L**eft / **R**ight | 未对齐取字（左半 / 右半） |
-| `sw` | **S**tore **W**ord | 存字 |
-| `sh` | **S**tore **H**alfword | 存半字 |
-| `sb` | **S**tore **B**yte | 存字节 |
-| `swl`、`swr` | **S**tore **W**ord **L**eft / **R**ight | 未对齐存字 |
-| `ll` | **L**oad **L**inked | 取字并建立链接（原子操作） |
-| `sc` | **S**tore **C**onditional | 条件存字（链接成功才写入） |
-
-### 分支与跳转
-
-| 指令 | 全称 | 含义 |
-| --- | --- | --- |
-| `beq` | **B**ranch if **EQ**ual | 相等则分支 |
-| `bne` | **B**ranch if **N**ot **E**qual | 不相等则分支 |
-| `blez` | **B**ranch if **L**ess than or **E**qual to **Z**ero | ≤0 则分支 |
-| `bgtz` | **B**ranch if **G**reater **T**han **Z**ero | >0 则分支 |
-| `bltz` | **B**ranch if **L**ess **T**han **Z**ero | <0 则分支 |
-| `bgez` | **B**ranch if **G**reater than or **E**qual to **Z**ero | ≥0 则分支 |
-| `bltzal` | **B**ranch if **L**ess **T**han **Z**ero **A**nd **L**ink | <0 则分支并保存返回地址 |
-| `bgezal` | **B**ranch if **G**reater than or **E**qual to **Z**ero **A**nd **L**ink | ≥0 则分支并保存返回地址 |
-| `j` | **J**ump | 无条件跳转 |
-| `jal` | **J**ump **A**nd **L**ink | 跳转并把返回地址存入 `$ra` |
-| `jr` | **J**ump **R**egister | 跳转到寄存器中的地址 |
-| `jalr` | **J**ump **A**nd **L**ink **R**egister | 寄存器跳转并保存返回地址 |
-
-### 系统与协处理器
-
-| 指令 | 全称 | 含义 |
-| --- | --- | --- |
-| `syscall` | **SYStem CALL** | 系统调用（调用号放在 `$v0`） |
-| `break` | **BREAK** | 断点（调试用） |
-| `nop` | **No** **Op**eration | 空操作 |
-| `eret` | **E**xception **RET**urn | 异常返回 |
-| `mfc0`、`mtc0` | **M**ove **F**rom / **T**o **C**oprocessor **0** | 读 / 写 CP0 寄存器 |
-| `mfc1`、`mtc1` | **M**ove **F**rom / **T**o **C**oprocessor **1** | 通用寄存器与浮点寄存器间搬数 |
-| `lwc1`、`swc1` | **L**oad / **S**tore **W**ord **C**oprocessor **1** | 浮点数访存 |
-| `cvt.s.w` | **C**on**V**er**T** **S**ingle from **W**ord | 整型转单精度浮点 |
-
-### 常见伪指令
-
-| 指令 | 全称 | 展开为 |
-| --- | --- | --- |
-| `li` | **L**oad **I**mmediate | `lui` + `ori`（或一条 `addi`/`ori`） |
-| `la` | **L**oad **A**ddress | `lui` + `ori` |
-| `move` | **MOVE** | `addu rd, rs, $zero` |
-| `not` | **NOT** | `nor rd, rs, $zero` |
-| `neg` | **NEG**ate | `sub rd, $zero, rs` |
-| `abs` | **ABS**olute value | 取绝对值（分支 + 减法） |
-| `mul` | **MUL**tiply | `mult` + `mflo` |
-| `rem` | **REM**ainder | `div` + `mfhi` |
-| `bgt`、`blt` | **B**ranch if **G**reater **T**han / **L**ess **T**han | `slt $at, …` + `bne` |
-| `bge`、`ble` | **B**ranch if **G**reater / **L**ess than or **E**qual | `slt $at, …` + `beq` |
-| `beqz`、`bnez` | **B**ranch if **EQ**ual / **N**ot **E**qual to **Z**ero | `beq`/`bne` + `$zero` |
-
-> 记忆口诀：**i 是立即数，u 是无符号，v 是移位量在寄存器，z 是与零比较；l/s 前缀是读/写内存，b/h/w 后缀是字节/半字/字。**
 
 ## 结合手册读懂指令
 
